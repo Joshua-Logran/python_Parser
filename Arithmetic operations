@@ -1,0 +1,149 @@
+import ply.lex as lex
+import ply.yacc as yacc
+import math
+# Symbol table for storing variables and types
+symbol_table = {}
+
+#Define the tokens
+tokens = ('PLUS', 'MINUS', 'TIMES', 'DIVIDE','SEMICOLON','MODULUS', 'EXPONENT','LPAREN', 'RPAREN','KEYWORD', 'IDENTIFIER', 'NUMBER', 'OPERATOR', 'LITERAL', 'PUNCTUATION', 'SPECIAL_CHARACTERS', 'SPACE', 'NEWLINE', 'COMMENT', 'OTHER')
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
+t_SEMICOLON = r';'
+t_MODULUS = r'%'
+t_EXPONENT = r'\^'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+t_KEYWORD = r'auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while|printf|include'
+t_IDENTIFIER = r'[a-zA-Z_$][a-zA-Z_$0-9]*'
+t_OTHER = r'\s*<[^>]*>|\<.*?\>'
+t_OPERATOR = r'\=\=|\!\=|\>|\>\=|\<|\<\=|\&\&|\|\||\=|\<\<|\>\>|\<\<\=|\>\>\=|\?|\:'
+t_COMMENT = r'\/\/.*'
+t_NUMBER = r'\b[0-9]+\b|\d+'
+t_LITERAL = r'\".*?\"|\'.\''
+t_PUNCTUATION = r'\;|\,|\:|\[|\]|\(|\)|\{|\}'
+t_SPECIAL_CHARACTERS = r'\°|\#|\&'
+
+
+t_ignore = ' \t\n'
+
+# Define a rule so we can track line numbers
+def t_NEWLINE(t):
+    r'\n'
+    t.lexer.lineno += 1
+    return t
+
+# Error handling rule
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
+
+
+
+
+
+# Syntax Analysis (Parsing)
+    # Precedence and associativity of operators, starts reading from the lowest precedence
+    # Associativity: left or right
+    # Precedence: higher number, higher precedence
+precedence = (
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'TIMES', 'DIVIDE'),
+    ('left', 'MODULUS'),
+    ('right', 'EXPONENT'),
+
+    
+)
+
+def p_expression_binop(p):
+    '''expression : NUMBER PLUS NUMBER PUNCTUATION
+                  | NUMBER MINUS NUMBER PUNCTUATION
+                  | NUMBER TIMES NUMBER PUNCTUATION
+                  | NUMBER DIVIDE NUMBER PUNCTUATION'''
+    p[1]=int(p[1])
+    p[3]=int(p[3])
+    if p[2] == '+':
+        p[0] = p[1] + p[3]
+    elif p[2] == '-':
+        p[0] = p[1] - p[3]
+    elif p[2] == '*':
+        p[0] = p[1] * p[3]
+    elif p[2] == '/':
+        p[0] = p[1] / p[3]
+    elif p[2] == '%':
+        p[0] = p[1] % p[3]
+    elif p[2] == '**':
+        p[0] = p[1] ** p[3]
+    print("Operación válida: ", p[1], p[2], p[3])
+    print ("Resultado: ", p[0])
+
+def p_error(p):
+    print("Syntax error in input!")
+
+# Rule for expressions
+
+def p_expression_number(p):
+    '''expression : NUMBER'''
+    p[0] = p[2]
+
+def p_expression_identifier(p):
+    '''expression : IDENTIFIER'''
+    p[0] = p[1]
+
+
+def p_expression_parentheses(p):
+    '''expression : LPAREN expression RPAREN'''
+    p[0] = p[2]
+
+
+
+# Define the grammar rules
+# Rule for declaring variables
+def p_statement_declare(p):
+    '''expression : KEYWORD IDENTIFIER PUNCTUATION'''
+    var_type = p[1]
+    var_name = p[2]
+    if var_name in symbol_table:
+        print(f"Semantic error: the variable '{var_name}' is already declared.")
+    else:
+        symbol_table[var_name] = var_type
+        print(f"Declaration detected: {var_name} of the type {var_type}")
+
+
+# Rule for assigning values to variables
+
+def p_statement_assign(p):
+    '''expression : IDENTIFIER OPERATOR NUMBER PUNCTUATION'''
+    var_name = p[1]
+    if var_name not in symbol_table:
+        print(f"Semantic error: the variable'{var_name}' has not been declared yet.")
+    else:
+        var_type = symbol_table[var_name]
+        expr_type = p[3][1]  # Tipo de la expresión
+        if var_type != expr_type:
+            print(f"Semantic error: cant assign a value of type '{expr_type}' to the variable '{var_name}' of type '{var_type}'.")
+        else:
+            print(f"Valid assignation: {var_name} = {p[3][0]}")
+
+
+# Build the lexer
+lexer = lex.lex()
+data = "int e;"
+lexer.input(data)
+
+
+while True:
+    token = lexer.token()
+    if not token:
+        break
+    print(token)
+
+#Construction of sintax analysis
+yacc.yacc()
+
+# Read the input
+result = yacc.parse(data)
+
+
+print(result)
