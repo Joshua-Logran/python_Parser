@@ -1,141 +1,128 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-# Symbol table for storing variables and types
-symbol_table = {}
+# Lista de tokens generales
+tokens = [
+    'PUNCTUATION',
+    'IDENTIFIER',
+    'OPERATOR',
+    'LITERAL',
+    'KEYWORD',
+    'NUMBER',
+    'INCLUDE'
+]
 
-# Define the tokens
-tokens = (
-    'LPAREN', 'RPAREN', 'KEYWORD', 'IDENTIFIER', 'NUMBER',
-    'OPERATOR', 'PUNCTUATION', 'INCLUDE', 'HEADER', 'STRING'
-)
+# Palabras clave en C, sin incluir 'main' para que sea tratado como IDENTIFIER
+keywords = {
+    'int': 'KEYWORD',
+    'return': 'KEYWORD',
+    'printf': 'IDENTIFIER'
+}
 
-# Token definitions
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_KEYWORD = r'int|void|return|printf|auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while|printf|include'
-t_IDENTIFIER = r'[a-zA-Z_$][a-zA-Z_$0-9]*'
-t_OPERATOR = r'\=|\=\=|\!\=|\>|\>\=|\<|\<\=|\&\&|\|\||\<\<|\>\>|\<\<\=|\>\>\=|\?|\:'
-t_PUNCTUATION = r';|,|\{|\}'  # Covers { and }
-t_INCLUDE = r'\#include'
-t_HEADER = r'\s*<[^>]*>|\<.*?\>'  # For headers like <stdio.h>
-t_STRING = r'\"([^\\"]|\\.)*\"'  # Capture strings, including escaped characters
+# Expresiones regulares para cada categoría de token
+t_PUNCTUATION = r'[;{}()]'
+t_OPERATOR = r'='
+t_INCLUDE = r'\#include\s+<\w+\.h>'
 
-# Ignored characters (whitespace)
-t_ignore = ' \t'
+# Expresión regular para cadenas literales
+def t_LITERAL(t):
+    r'\"([^\\\n]|(\\.))*?\"'
+    return t
 
-# Define a rule to track line numbers
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
+# Identificadores, que podrían ser palabras clave o variables
+def t_IDENTIFIER(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = keywords.get(t.value, 'IDENTIFIER')  # 'main' no está en keywords
+    return t
 
-# Number token with integer values
+# Números
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
-# Error handling rule
+# Ignorar espacios y tabulaciones
+t_ignore = ' \t'
+
+# Manejo de nuevas líneas
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
+# Manejo de errores léxicos
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print(f"Carácter ilegal '{t.value[0]}' en la línea {t.lineno}")
     t.lexer.skip(1)
 
-# Build the lexer
+# Construir el lexer
 lexer = lex.lex()
 
-# Parsing rules
-precedence = ()  # No operator precedence needed for this structure
-
-# The start rule for the parser
+# Definir la gramática para el parser
 def p_program(p):
-    '''program : include_statement function_definition'''
-    print("Program parsed successfully.")
+    '''program : INCLUDE function'''
+    print("Programa C válido")
 
-# Rule for include statements
-def p_include_statement(p):
-    '''include_statement : INCLUDE HEADER'''
-    #print(f"Include statement detected: {p[2]}")
-
-# Rule for function definition, including braces for the body
-def p_function_definition(p):
-    '''function_definition : KEYWORD IDENTIFIER LPAREN RPAREN PUNCTUATION statement_block'''
-    print("Function definition detected.")
-
-# Rule for a block of statements within curly braces
-def p_statement_block(p):
-    '''statement_block : PUNCTUATION statements PUNCTUATION'''
+def p_function(p):
+    '''function : KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION PUNCTUATION block'''
     pass
 
-# Rule for multiple statements in function body
+def p_block(p):
+    '''block : PUNCTUATION declarations statements return_statement PUNCTUATION'''
+    pass
+
+def p_declarations(p):
+    '''declarations : declaration
+                    | declarations declaration'''
+    pass
+
+def p_declaration(p):
+    '''declaration : KEYWORD IDENTIFIER PUNCTUATION'''
+    pass
+
 def p_statements(p):
-    '''statements : statement statements
-                  | statement'''
+    '''statements : statement
+                  | statements statement'''
     pass
 
-# Rule for individual statements
 def p_statement(p):
-    '''statement : statement_declare
-                 | statement_assign
-                 | statement_printf
-                 | statement_return'''
+    '''statement : IDENTIFIER OPERATOR NUMBER PUNCTUATION
+                 | IDENTIFIER PUNCTUATION LITERAL PUNCTUATION'''
     pass
 
-# Rule for declaring variables
-def p_statement_declare(p):
-    '''statement_declare : KEYWORD IDENTIFIER PUNCTUATION'''
-    var_type = p[1]
-    var_name = p[2]
-    if var_name in symbol_table:
-        print(f"Semantic error: the variable '{var_name}' is already declared.")
-    else:
-        symbol_table[var_name] = var_type
-        print(f"Declaration detected: {var_name} of the type {var_type}")
+def p_return_statement(p):
+    '''return_statement : KEYWORD NUMBER PUNCTUATION'''
+    pass
 
-# Rule for assigning values to variables
-def p_statement_assign(p):
-    '''statement_assign : IDENTIFIER OPERATOR NUMBER PUNCTUATION'''
-    var_name = p[1]
-    if var_name not in symbol_table:
-        print(f"Semantic error: the variable '{var_name}' has not been declared yet.")
-    else:
-        print(f"Valid assignment: {var_name} = {p[3]}")
-
-# Rule for printf statements
-def p_statement_printf(p):
-    '''statement_printf : KEYWORD LPAREN STRING RPAREN PUNCTUATION'''
-    print(f"Printf statement detected with message: {p[3]}")
-
-# Rule for return statements
-def p_statement_return(p):
-    '''statement_return : KEYWORD NUMBER PUNCTUATION'''
-    print(f"Return statement detected with value: {p[2]}")
-
+# Manejo de errores sintácticos
 def p_error(p):
     if p:
-        print(f"Syntax error at '{p.value}'")
+        print(f"Error de sintaxis en '{p.value}'")
     else:
-        print("Syntax error at EOF")
+        print("Error de sintaxis al final del archivo")
 
-# Build the parser
-yacc.yacc()
+# Construir el parser
+parser = yacc.yacc()
 
-# Test lexer and parser with the input
-data = '''#include <stdio.h>
+# Código de ejemplo para analizar
+code = '''
+#include <stdio.h>
 int main() {
     int a;
     a = 5;
-    printf("Hola, mundo!\n");
+    printf("Hola, mundo!\\n");
     return 0;
-}'''
+}
+'''
 
-# Tokenize and parse the input
-lexer.input(data)
+# Pasar el código al lexer y parser
+lexer.input(code)
+print("Tokens generados:")
 while True:
-    token = lexer.token()
-    if not token:
+    tok = lexer.token()
+    if not tok:
         break
-    print(token)
+    print(tok)
 
-# Parse
-result = yacc.parse(data)
-print(result)
+# Ejecutar el parser
+print("\nResultado del análisis sintáctico:")
+result = parser.parse(code)
