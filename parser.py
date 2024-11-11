@@ -2,6 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 # Lista de tokens generales
+"""
 tokens = [
     'PUNCTUATION',
     'IDENTIFIER',
@@ -11,13 +12,16 @@ tokens = [
     'NUMBER',
     'INCLUDE'
 ]
+"""
+
+tokens = ('PUNCTUATION', 'OPERATOR', 'LITERAL', 'KEYWORD', 'IDENTIFIER', 'NUMBER', 'INCLUDE')
 
 # Palabras clave en C, sin incluir 'main' para que sea tratado como IDENTIFIER
 keywords = {
     'int': 'KEYWORD',
-    'return': 'KEYWORD',
-    'printf': 'IDENTIFIER'
+    'return': 'KEYWORD'
 }
+
 
 # Expresiones regulares para cada categoría de token
 t_PUNCTUATION = r'[;{}()]'
@@ -63,34 +67,41 @@ def p_program(p):
     print("Programa C válido")
 
 def p_function(p):
-    '''function : KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION PUNCTUATION block'''
+    '''function : KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION block'''
+    print("Función válida")
     pass
 
 def p_block(p):
-    '''block : PUNCTUATION declarations statements return_statement PUNCTUATION'''
+    '''block : PUNCTUATION declarations statements return_statement PUNCTUATION '''
+    print("Bloque válido")
     pass
 
 def p_declarations(p):
     '''declarations : declaration
                     | declarations declaration'''
+    print("Declaraciones válidas")
     pass
 
 def p_declaration(p):
     '''declaration : KEYWORD IDENTIFIER PUNCTUATION'''
+    print("Declaración válida")
     pass
 
 def p_statements(p):
-    '''statements : statement
-                  | statements statement'''
+    '''statements : statement PUNCTUATION
+                  | statements statement PUNCTUATION'''
+    print("Sentencias válidas")
     pass
 
 def p_statement(p):
-    '''statement : IDENTIFIER OPERATOR NUMBER PUNCTUATION
+    '''statement : IDENTIFIER OPERATOR NUMBER
                  | IDENTIFIER PUNCTUATION LITERAL PUNCTUATION'''
+    print("Sentencia válida")
     pass
 
 def p_return_statement(p):
     '''return_statement : KEYWORD NUMBER PUNCTUATION'''
+    print("Sentencia de retorno válida")
     pass
 
 # Manejo de errores sintácticos
