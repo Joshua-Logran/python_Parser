@@ -1,0 +1,471 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> INCLUDE function
+Rule 2     function -> KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION block
+Rule 3     block -> PUNCTUATION declarations statements return_statement PUNCTUATION
+Rule 4     declarations -> declaration PUNCTUATION
+Rule 5     declarations -> declarations declaration PUNCTUATION
+Rule 6     declaration -> KEYWORD IDENTIFIER
+Rule 7     statements -> statement PUNCTUATION
+Rule 8     statements -> statements statement PUNCTUATION
+Rule 9     operation -> NUMBER PLUS NUMBER
+Rule 10    operation -> NUMBER MINUS NUMBER
+Rule 11    operation -> NUMBER TIMES NUMBER
+Rule 12    operation -> NUMBER DIVIDE NUMBER
+Rule 13    operation -> NUMBER MODULUS NUMBER
+Rule 14    operation -> NUMBER EXPONENT NUMBER
+Rule 15    statement -> assignment_statement
+Rule 16    statement -> IDENTIFIER PUNCTUATION LITERAL PUNCTUATION
+Rule 17    statement -> assignment_operation
+Rule 18    assignment_statement -> IDENTIFIER OPERATOR NUMBER
+Rule 19    assignment_statement -> IDENTIFIER OPERATOR LITERAL
+Rule 20    assignment_operation -> IDENTIFIER OPERATOR operation
+Rule 21    return_statement -> KEYWORD NUMBER PUNCTUATION
+
+Terminals, with rules where they appear
+
+DIVIDE               : 12
+EXPONENT             : 14
+IDENTIFIER           : 2 6 16 18 19 20
+INCLUDE              : 1
+KEYWORD              : 2 6 21
+LITERAL              : 16 19
+MINUS                : 10
+MODULUS              : 13
+NUMBER               : 9 9 10 10 11 11 12 12 13 13 14 14 18 21
+OPERATOR             : 18 19 20
+PLUS                 : 9
+PUNCTUATION          : 2 2 3 3 4 5 7 8 16 16 21
+TIMES                : 11
+error                : 
+
+Nonterminals, with rules where they appear
+
+assignment_operation : 17
+assignment_statement : 15
+block                : 2
+declaration          : 4 5
+declarations         : 3 5
+function             : 1
+operation            : 20
+program              : 0
+return_statement     : 3
+statement            : 7 8
+statements           : 3 8
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . INCLUDE function
+
+    INCLUDE         shift and go to state 2
+
+    program                        shift and go to state 1
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> INCLUDE . function
+    (2) function -> . KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION block
+
+    KEYWORD         shift and go to state 4
+
+    function                       shift and go to state 3
+
+state 3
+
+    (1) program -> INCLUDE function .
+
+    $end            reduce using rule 1 (program -> INCLUDE function .)
+
+
+state 4
+
+    (2) function -> KEYWORD . IDENTIFIER PUNCTUATION PUNCTUATION block
+
+    IDENTIFIER      shift and go to state 5
+
+
+state 5
+
+    (2) function -> KEYWORD IDENTIFIER . PUNCTUATION PUNCTUATION block
+
+    PUNCTUATION     shift and go to state 6
+
+
+state 6
+
+    (2) function -> KEYWORD IDENTIFIER PUNCTUATION . PUNCTUATION block
+
+    PUNCTUATION     shift and go to state 7
+
+
+state 7
+
+    (2) function -> KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION . block
+    (3) block -> . PUNCTUATION declarations statements return_statement PUNCTUATION
+
+    PUNCTUATION     shift and go to state 8
+
+    block                          shift and go to state 9
+
+state 8
+
+    (3) block -> PUNCTUATION . declarations statements return_statement PUNCTUATION
+    (4) declarations -> . declaration PUNCTUATION
+    (5) declarations -> . declarations declaration PUNCTUATION
+    (6) declaration -> . KEYWORD IDENTIFIER
+
+    KEYWORD         shift and go to state 12
+
+    declarations                   shift and go to state 10
+    declaration                    shift and go to state 11
+
+state 9
+
+    (2) function -> KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION block .
+
+    $end            reduce using rule 2 (function -> KEYWORD IDENTIFIER PUNCTUATION PUNCTUATION block .)
+
+
+state 10
+
+    (3) block -> PUNCTUATION declarations . statements return_statement PUNCTUATION
+    (5) declarations -> declarations . declaration PUNCTUATION
+    (7) statements -> . statement PUNCTUATION
+    (8) statements -> . statements statement PUNCTUATION
+    (6) declaration -> . KEYWORD IDENTIFIER
+    (15) statement -> . assignment_statement
+    (16) statement -> . IDENTIFIER PUNCTUATION LITERAL PUNCTUATION
+    (17) statement -> . assignment_operation
+    (18) assignment_statement -> . IDENTIFIER OPERATOR NUMBER
+    (19) assignment_statement -> . IDENTIFIER OPERATOR LITERAL
+    (20) assignment_operation -> . IDENTIFIER OPERATOR operation
+
+    KEYWORD         shift and go to state 12
+    IDENTIFIER      shift and go to state 16
+
+    statements                     shift and go to state 13
+    declaration                    shift and go to state 14
+    statement                      shift and go to state 15
+    assignment_statement           shift and go to state 17
+    assignment_operation           shift and go to state 18
+
+state 11
+
+    (4) declarations -> declaration . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 19
+
+
+state 12
+
+    (6) declaration -> KEYWORD . IDENTIFIER
+
+    IDENTIFIER      shift and go to state 20
+
+
+state 13
+
+    (3) block -> PUNCTUATION declarations statements . return_statement PUNCTUATION
+    (8) statements -> statements . statement PUNCTUATION
+    (21) return_statement -> . KEYWORD NUMBER PUNCTUATION
+    (15) statement -> . assignment_statement
+    (16) statement -> . IDENTIFIER PUNCTUATION LITERAL PUNCTUATION
+    (17) statement -> . assignment_operation
+    (18) assignment_statement -> . IDENTIFIER OPERATOR NUMBER
+    (19) assignment_statement -> . IDENTIFIER OPERATOR LITERAL
+    (20) assignment_operation -> . IDENTIFIER OPERATOR operation
+
+    KEYWORD         shift and go to state 23
+    IDENTIFIER      shift and go to state 16
+
+    return_statement               shift and go to state 21
+    statement                      shift and go to state 22
+    assignment_statement           shift and go to state 17
+    assignment_operation           shift and go to state 18
+
+state 14
+
+    (5) declarations -> declarations declaration . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 24
+
+
+state 15
+
+    (7) statements -> statement . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 25
+
+
+state 16
+
+    (16) statement -> IDENTIFIER . PUNCTUATION LITERAL PUNCTUATION
+    (18) assignment_statement -> IDENTIFIER . OPERATOR NUMBER
+    (19) assignment_statement -> IDENTIFIER . OPERATOR LITERAL
+    (20) assignment_operation -> IDENTIFIER . OPERATOR operation
+
+    PUNCTUATION     shift and go to state 26
+    OPERATOR        shift and go to state 27
+
+
+state 17
+
+    (15) statement -> assignment_statement .
+
+    PUNCTUATION     reduce using rule 15 (statement -> assignment_statement .)
+
+
+state 18
+
+    (17) statement -> assignment_operation .
+
+    PUNCTUATION     reduce using rule 17 (statement -> assignment_operation .)
+
+
+state 19
+
+    (4) declarations -> declaration PUNCTUATION .
+
+    KEYWORD         reduce using rule 4 (declarations -> declaration PUNCTUATION .)
+    IDENTIFIER      reduce using rule 4 (declarations -> declaration PUNCTUATION .)
+
+
+state 20
+
+    (6) declaration -> KEYWORD IDENTIFIER .
+
+    PUNCTUATION     reduce using rule 6 (declaration -> KEYWORD IDENTIFIER .)
+
+
+state 21
+
+    (3) block -> PUNCTUATION declarations statements return_statement . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 28
+
+
+state 22
+
+    (8) statements -> statements statement . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 29
+
+
+state 23
+
+    (21) return_statement -> KEYWORD . NUMBER PUNCTUATION
+
+    NUMBER          shift and go to state 30
+
+
+state 24
+
+    (5) declarations -> declarations declaration PUNCTUATION .
+
+    KEYWORD         reduce using rule 5 (declarations -> declarations declaration PUNCTUATION .)
+    IDENTIFIER      reduce using rule 5 (declarations -> declarations declaration PUNCTUATION .)
+
+
+state 25
+
+    (7) statements -> statement PUNCTUATION .
+
+    KEYWORD         reduce using rule 7 (statements -> statement PUNCTUATION .)
+    IDENTIFIER      reduce using rule 7 (statements -> statement PUNCTUATION .)
+
+
+state 26
+
+    (16) statement -> IDENTIFIER PUNCTUATION . LITERAL PUNCTUATION
+
+    LITERAL         shift and go to state 31
+
+
+state 27
+
+    (18) assignment_statement -> IDENTIFIER OPERATOR . NUMBER
+    (19) assignment_statement -> IDENTIFIER OPERATOR . LITERAL
+    (20) assignment_operation -> IDENTIFIER OPERATOR . operation
+    (9) operation -> . NUMBER PLUS NUMBER
+    (10) operation -> . NUMBER MINUS NUMBER
+    (11) operation -> . NUMBER TIMES NUMBER
+    (12) operation -> . NUMBER DIVIDE NUMBER
+    (13) operation -> . NUMBER MODULUS NUMBER
+    (14) operation -> . NUMBER EXPONENT NUMBER
+
+    NUMBER          shift and go to state 32
+    LITERAL         shift and go to state 33
+
+    operation                      shift and go to state 34
+
+state 28
+
+    (3) block -> PUNCTUATION declarations statements return_statement PUNCTUATION .
+
+    $end            reduce using rule 3 (block -> PUNCTUATION declarations statements return_statement PUNCTUATION .)
+
+
+state 29
+
+    (8) statements -> statements statement PUNCTUATION .
+
+    KEYWORD         reduce using rule 8 (statements -> statements statement PUNCTUATION .)
+    IDENTIFIER      reduce using rule 8 (statements -> statements statement PUNCTUATION .)
+
+
+state 30
+
+    (21) return_statement -> KEYWORD NUMBER . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 35
+
+
+state 31
+
+    (16) statement -> IDENTIFIER PUNCTUATION LITERAL . PUNCTUATION
+
+    PUNCTUATION     shift and go to state 36
+
+
+state 32
+
+    (18) assignment_statement -> IDENTIFIER OPERATOR NUMBER .
+    (9) operation -> NUMBER . PLUS NUMBER
+    (10) operation -> NUMBER . MINUS NUMBER
+    (11) operation -> NUMBER . TIMES NUMBER
+    (12) operation -> NUMBER . DIVIDE NUMBER
+    (13) operation -> NUMBER . MODULUS NUMBER
+    (14) operation -> NUMBER . EXPONENT NUMBER
+
+    PUNCTUATION     reduce using rule 18 (assignment_statement -> IDENTIFIER OPERATOR NUMBER .)
+    PLUS            shift and go to state 37
+    MINUS           shift and go to state 38
+    TIMES           shift and go to state 39
+    DIVIDE          shift and go to state 40
+    MODULUS         shift and go to state 41
+    EXPONENT        shift and go to state 42
+
+
+state 33
+
+    (19) assignment_statement -> IDENTIFIER OPERATOR LITERAL .
+
+    PUNCTUATION     reduce using rule 19 (assignment_statement -> IDENTIFIER OPERATOR LITERAL .)
+
+
+state 34
+
+    (20) assignment_operation -> IDENTIFIER OPERATOR operation .
+
+    PUNCTUATION     reduce using rule 20 (assignment_operation -> IDENTIFIER OPERATOR operation .)
+
+
+state 35
+
+    (21) return_statement -> KEYWORD NUMBER PUNCTUATION .
+
+    PUNCTUATION     reduce using rule 21 (return_statement -> KEYWORD NUMBER PUNCTUATION .)
+
+
+state 36
+
+    (16) statement -> IDENTIFIER PUNCTUATION LITERAL PUNCTUATION .
+
+    PUNCTUATION     reduce using rule 16 (statement -> IDENTIFIER PUNCTUATION LITERAL PUNCTUATION .)
+
+
+state 37
+
+    (9) operation -> NUMBER PLUS . NUMBER
+
+    NUMBER          shift and go to state 43
+
+
+state 38
+
+    (10) operation -> NUMBER MINUS . NUMBER
+
+    NUMBER          shift and go to state 44
+
+
+state 39
+
+    (11) operation -> NUMBER TIMES . NUMBER
+
+    NUMBER          shift and go to state 45
+
+
+state 40
+
+    (12) operation -> NUMBER DIVIDE . NUMBER
+
+    NUMBER          shift and go to state 46
+
+
+state 41
+
+    (13) operation -> NUMBER MODULUS . NUMBER
+
+    NUMBER          shift and go to state 47
+
+
+state 42
+
+    (14) operation -> NUMBER EXPONENT . NUMBER
+
+    NUMBER          shift and go to state 48
+
+
+state 43
+
+    (9) operation -> NUMBER PLUS NUMBER .
+
+    PUNCTUATION     reduce using rule 9 (operation -> NUMBER PLUS NUMBER .)
+
+
+state 44
+
+    (10) operation -> NUMBER MINUS NUMBER .
+
+    PUNCTUATION     reduce using rule 10 (operation -> NUMBER MINUS NUMBER .)
+
+
+state 45
+
+    (11) operation -> NUMBER TIMES NUMBER .
+
+    PUNCTUATION     reduce using rule 11 (operation -> NUMBER TIMES NUMBER .)
+
+
+state 46
+
+    (12) operation -> NUMBER DIVIDE NUMBER .
+
+    PUNCTUATION     reduce using rule 12 (operation -> NUMBER DIVIDE NUMBER .)
+
+
+state 47
+
+    (13) operation -> NUMBER MODULUS NUMBER .
+
+    PUNCTUATION     reduce using rule 13 (operation -> NUMBER MODULUS NUMBER .)
+
+
+state 48
+
+    (14) operation -> NUMBER EXPONENT NUMBER .
+
+    PUNCTUATION     reduce using rule 14 (operation -> NUMBER EXPONENT NUMBER .)
+
