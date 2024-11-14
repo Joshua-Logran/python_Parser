@@ -183,7 +183,7 @@ def p_error(p):
         print("Syntax error at the end of the file")  # Print end of file error
 
 # Build the parser
-parser = yacc.yacc()  # Initialize the parser
+parser = yacc.yacc(debug=True, write_tables=True)  # Initialize the parser
 
 # Main function to process a file
 def main():
@@ -210,7 +210,7 @@ def main():
         print("Lexing error")  # Print lexical error message
     else:
         print("Syntactic analysis result:")  # Begin syntactic analysis output
-        result = parser.parse(code)  # Run the parser
+        parser.parse(code)  # Run the parser
         if flag_sintax_error and flag_semantic_error:  # Check for syntax and semantic errors
             print("Parsing error")  # Print parsing error message
             print("SDT error")  # Print SDT error message
